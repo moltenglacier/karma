@@ -1,0 +1,49 @@
+body {
+  margin-left: 4em;
+}
+
+@media (max-width: 400px) {
+  body {
+    margin-left: 5%;
+  }
+}
+
+.person {
+  margin: 0.5em;
+  float: left;
+  border: 1px solid #ddd;
+  padding: 10px;
+  width: 250px;
+}
+
+span.points {
+  margin-left: 0.5em;
+  border: 1px solid #939191;
+  border-radius: 50%;
+  width: 17px;
+  display: inline-block;
+  text-align: center;
+  padding: 5px;
+  background-color: #F4F1F1;
+  float: right;
+  cursor: pointer;
+}
+
+.points:hover {
+  opacity: 0.6;
+}
+
+.name {
+  font-size: 1.2em;
+}
+
+.input input {
+  width: 30px;
+  float: right;
+}
+
+.hidden{
+  display: none;
+}
+
+
