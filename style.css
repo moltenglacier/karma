@@ -46,4 +46,6 @@ span.points {
   display: none;
 }
 
-
+form#newPersonForm {
+  margin: 1em auto;
+}

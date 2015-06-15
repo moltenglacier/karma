@@ -1,9 +1,20 @@
 var Karma = {
+  dbRef: new Firebase("https://ch-karma.firebaseio.com/"),
+  addPerson: function(personName) {
+    this.dbRef.child("users").push({ name: personName, points: 0});
+  },
   storeData: function() {
-    localStorage["karma.data"] = JSON.stringify(this.data);
+    this.dbRef.set({ users: this.data });
   },
   readData: function() {
-    this.data = JSON.parse(localStorage["karma.data"] || "[]");
+    this.dbRef.on("value", function(snap) {
+      console.log("snap", snap);
+      if (snap.val()) {
+        Karma.data = snap.val().users;
+        console.log(Karma.data);
+        Karma.redrawUI();
+      }
+    });
   },
   leaderboard: function() {
     return this.data.sort(this.compare);
@@ -69,6 +80,12 @@ var Karma = {
 
 $(document).ready(function() {
   Karma.readData();
-  Karma.redrawUI();
   Karma.eventHandler();
+
+  $("#newPersonForm").on("submit", function() {
+    var $newPersonName = $("#newPersonName");
+    Karma.addPerson($newPersonName.val());
+    return false;
+  });
+
 });

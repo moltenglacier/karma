@@ -3,8 +3,8 @@
   <head>
     <title>Leaderboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="style.css" rel="stylesheet" type="text/css">
   </head>
-  <link href="style.css" rel="stylesheet" type="text/css">
   <body>
     <h1>Leaderboard</h1>
 
@@ -16,9 +16,15 @@
       </span>
     </div>
 
+    <form id="newPersonForm">
+      <input id="newPersonName" placeholder="Add Person's Name Here" required>
+      <button type="submit">Add</button>
+    </form>
+
     <div id="ppl">
     </div>
 
+    <script src="https://cdn.firebase.com/js/client/2.2.7/firebase.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="script.js"></script>
   </body>
