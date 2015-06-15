@@ -1,30 +1,20 @@
 var Karma = {
   dbRef: new Firebase("https://ch-karma.firebaseio.com/"),
   addPerson: function(personName) {
-    this.dbRef.child("users").push({ name: personName, points: 0});
+    this.dbRef.push({ name: personName, points: 0});
   },
-  storeData: function() {
-    this.dbRef.set({ users: this.data });
-  },
-  readData: function() {
-    this.dbRef.on("value", function(snap) {
-      console.log("snap", snap);
-      if (snap.val()) {
-        Karma.data = snap.val().users;
-        console.log(Karma.data);
-        Karma.redrawUI();
-      }
-    });
-  },
+  // storeData: function() {
+  //   this.dbRef.set({ users: this.data });
+  // },
   leaderboard: function() {
     return this.data.sort(this.compare);
   },
   compare: function(a, b) {
     return b.points - a.points;
   },
-  modifyPointsFor: function(indexInArray, newPoints) {
+  modifyPointsFor: function(indexInArray, userId, newPoints) {
     this.data[indexInArray].points = newPoints;
-    this.storeData();
+    // this.storeData();
   },
   redrawUI: function() {
     $("#ppl").empty();
@@ -37,6 +27,7 @@ var Karma = {
     var ppl = sorted.map(function(p, i) {
       $clonedLi = $template.clone().show();
       $clonedLi.data("order", i);
+      $clonedLi.data("userId", p.userId);
       $clonedLi.find(".name").text(p.name);
       $clonedLi.find(".points").text(p.points);
       $clonedLi.find("input").val(p.points);
@@ -69,9 +60,10 @@ var Karma = {
   },
   updatePoints: function($input) {
     var $person = $input.parents(".person");
-    var personIndex = $person.data("order");
+    var order = $person.data("order");
+    var userId = $person.data("userId");
     var newVal = $input.val();
-    this.modifyPointsFor(personIndex, newVal);
+    this.modifyPointsFor(order, userId, newVal);
     $person.find(".input").hide();
     $person.find(".points").text(newVal).show();
   },
@@ -79,13 +71,22 @@ var Karma = {
 };
 
 $(document).ready(function() {
-  Karma.readData();
   Karma.eventHandler();
 
   $("#newPersonForm").on("submit", function() {
     var $newPersonName = $("#newPersonName");
     Karma.addPerson($newPersonName.val());
     return false;
+  });
+
+  var user = {};
+  Karma.dbRef.on("child_added", function(snap) {
+    if (snap.val()) {
+      user = snap.val();
+      user.userId = snap.key();
+      Karma.data.push(user);
+      Karma.redrawUI();
+    }
   });
 
 });
