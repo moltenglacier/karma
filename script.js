@@ -1,4 +1,4 @@
-var $$ = {
+var Karma = {
   storeData: function() {
     localStorage["karma.data"] = JSON.stringify(this.data);
   },
@@ -14,15 +14,14 @@ var $$ = {
   modifyPointsFor: function(indexInArray, newPoints) {
     this.data[indexInArray].points = newPoints;
     this.storeData();
-    // this.redrawUI();
   },
   redrawUI: function() {
     $("#ppl").empty();
-    if ($$.data.length === 0) {
+    if (this.data.length === 0) {
       $("#ppl").text("Nothing here, yo");
       return;
     }
-    var sorted = $$.leaderboard();
+    var sorted = this.leaderboard();
     var $template = $(".person:first"), $clonedLi;
     var ppl = sorted.map(function(p, i) {
       $clonedLi = $template.clone().show();
@@ -40,9 +39,9 @@ var $$ = {
       e.stopPropagation();
       if (!$(e.target).is(":input,.points")) {
         $(".person:has(:input:visible)").each(function(i, e) {
-          $$.updatePoints($(e).find("input"));
+          Karma.updatePoints($(e).find("input"));
         });
-        $$.redrawUI();
+        Karma.redrawUI();
       }
     });
     $("#ppl").on("click", ".points", function(event) {
@@ -52,8 +51,8 @@ var $$ = {
     }).on("keyup", "input", function(event) {
       if (event.which === 13) {
         var $input = $(this);
-        $$.updatePoints($input);
-        $$.redrawUI();
+        Karma.updatePoints($input);
+        Karma.redrawUI();
       }
     });
   },
@@ -61,15 +60,15 @@ var $$ = {
     var $person = $input.parents(".person");
     var personIndex = $person.data("order");
     var newVal = $input.val();
-    $$.modifyPointsFor(personIndex, newVal);
+    this.modifyPointsFor(personIndex, newVal);
     $person.find(".input").hide();
     $person.find(".points").text(newVal).show();
   },
   data: []
-}
+};
 
 $(document).ready(function() {
-  $$.readData();
-  $$.redrawUI();
-  $$.eventHandler();
-})
+  Karma.readData();
+  Karma.redrawUI();
+  Karma.eventHandler();
+});
