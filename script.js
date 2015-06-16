@@ -1,11 +1,9 @@
 var Karma = {
   dbRef: new Firebase("https://ch-karma.firebaseio.com/"),
+  currentAuth: undefined,
   addPerson: function(personName) {
     this.dbRef.push({ name: personName, points: 0});
   },
-  // storeData: function() {
-  //   this.dbRef.set({ users: this.data });
-  // },
   leaderboard: function() {
     return this.data.sort(this.compare);
   },
@@ -14,9 +12,15 @@ var Karma = {
   },
   modifyPointsFor: function(indexInArray, userId, newPoints) {
     this.data[indexInArray].points = newPoints;
-    // this.storeData();
+    this.dbRef.child(userId).update({ points: newPoints });
   },
-  redrawUI: function() {
+  redrawAdminUI: function() {
+    var loggedIn = this.currentAuth;
+    $("#loginForm").toggleClass("hidden", loggedIn);
+    $("#newPersonForm").toggleClass("hidden", !loggedIn);
+    this.eventHandler();
+  },
+  redrawUsersUI: function() {
     $("#ppl").empty();
     if (this.data.length === 0) {
       $("#ppl").text("Nothing here, yo");
@@ -43,7 +47,7 @@ var Karma = {
         $(".person:has(:input:visible)").each(function(i, e) {
           Karma.updatePoints($(e).find("input"));
         });
-        Karma.redrawUI();
+        Karma.redrawUsersUI();
       }
     });
     $("#ppl").on("click", ".points", function(event) {
@@ -54,7 +58,7 @@ var Karma = {
       if (event.which === 13) {
         var $input = $(this);
         Karma.updatePoints($input);
-        Karma.redrawUI();
+        Karma.redrawUsersUI();
       }
     });
   },
@@ -71,7 +75,23 @@ var Karma = {
 };
 
 $(document).ready(function() {
-  Karma.eventHandler();
+
+  $("#loginForm").on("submit", function(e) {
+    e.preventDefault();
+    Karma.dbRef.authWithPassword({
+      email: $("#email").val(),
+      password: $("#password").val()
+    }, function(error, authData) {
+      if (error) {
+        console.log("Login Failed!", error);
+      } else {
+        console.log("Authenticated successfully with payload:", authData);
+        Karma.currentAuth = authData
+        Karma.redrawAdminUI();
+      }
+    });
+    return false;
+  });
 
   $("#newPersonForm").on("submit", function() {
     var $newPersonName = $("#newPersonName");
@@ -85,7 +105,7 @@ $(document).ready(function() {
       user = snap.val();
       user.userId = snap.key();
       Karma.data.push(user);
-      Karma.redrawUI();
+      Karma.redrawUsersUI();
     }
   });
 

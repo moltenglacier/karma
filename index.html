@@ -16,7 +16,13 @@
       </span>
     </div>
 
-    <form id="newPersonForm">
+    <form id="loginForm">
+      <input id="email" type="email" placeholder="Email address" required>
+      <input id="password" type="password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+
+    <form id="newPersonForm" class="hidden">
       <input id="newPersonName" placeholder="Add Person's Name Here" required>
       <button type="submit">Add</button>
     </form>
