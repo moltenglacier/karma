@@ -1,5 +1,5 @@
 var Karma = {
-  dbRef: new Firebase("https://ch-karma.firebaseio.com/"),
+  dbRef: new Firebase("https://collinskarma.firebaseio.com/"),
   currentAuth: undefined,
   addPerson: function(personName) {
     this.dbRef.push({ name: personName, points: 0});
@@ -86,7 +86,7 @@ $(document).ready(function() {
         console.log("Login Failed!", error);
       } else {
         console.log("Authenticated successfully with payload:", authData);
-        Karma.currentAuth = authData
+        Karma.currentAuth = authData;
         Karma.redrawAdminUI();
       }
     });
